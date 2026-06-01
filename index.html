@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jsQuiz06 - scramble text → TRIDENT</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        font-family: monospace;
+      }
+
+      .text {
+        margin: 0;
+        display: flex;
+        font-size: clamp(2.5rem, 12vw, 6rem); /* 画面幅に応じて文字サイズが変わる */
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .text span {
+        display: inline-block;
+        width: 0.72em;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 文字は最初から1文字ずつ <span> に入れてあります（TRIDENT）。 -->
+    <h1 class="text"><span>T</span><span>R</span><span>I</span><span>D</span><span>E</span><span>N</span><span>T</span></h1>
+
+    <script type="module">
+      // Motion ライブラリを CDN から import 済みです（書き換えないでください）。
+      import { animate, stagger } from 'https://cdn.jsdelivr.net/npm/motion@12/+esm';
+
+      const TARGET = 'TRIDENT';
+      const text = document.querySelector('.text');
+
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&@*';
+      const randomChar = () => charset[Math.floor(Math.random() * charset.length)];
+
+      // HTML に置いてある <span> を取得（letters[0] が T、letters[1] が R …）。
+      const letters = text.querySelectorAll('span');
+
+      // ここから下があなたの課題です。
+      /*
+      いまは「1文字目（letters[0]）だけ」がスクランブルする例になっています。
+      文字をクリックすると、先頭の T だけがランダム文字を経由して T に戻ります。
+      これを参考に、クリックで【すべての文字】が
+       中央から順にスクランブルして TRIDENT に戻るようにしてください。
+
+      ヒント:
+      ・lettersをforEachで1文字ずつ回す
+      ・中央から広げる遅延 → stagger(0.08, { from: 'center' }) を使う
+      （数値の delay が要るので stag(i, letters.length) のように呼び出す）
+      */
+
+      // animate(0, 1, { ... }) は「0 → 1 へ変化する数値」を duration 秒かけて作ります。
+      // onUpdate(progress) はアニメーションの毎フレーム呼ばれ、その時点の値（0〜1）が
+      // progress に入ります。これを使って、進行中（progress < 1）はランダム文字、
+      // 完了時（progress が 1）は確定文字（TARGET[i]）に切り替えています。
+      text.addEventListener('click', function () {
+        const i = 0;
+        const span = letters[i];
+        animate(0, 1, {
+          duration: 0.5,
+          onUpdate: function (progress) {
+            span.textContent = progress < 1 ? randomChar() : TARGET[i];
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
